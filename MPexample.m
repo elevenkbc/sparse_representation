@@ -3,20 +3,24 @@ function MPexample
 close all
 clear all
 clc
-%產生 DCT dictionary
-N = 1500; %DCT dictionary atoms 的個數
-signal_length = 1024; %訊號長度
-dictionary = zeros(signal_length, N);
-dictionary(:, 1) = 1/(sqrt(N))*ones(signal_length,1);
-for i = 2 : N
-    dictionary(:, i) = sqrt(2/N)*cos((pi/N)*((1:signal_length)' + (1/2))*(i-1));
-end
 
 % 載入測試訊號
 load cuspamax;
 
+
+%產生 DCT dictionary
+N = 1500; %DCT dictionary atoms 的個數
+signal_length = length(cuspamax); %訊號長度
+dictionary = zeros(signal_length, N);
+dictionary(:, 1) = 1/(sqrt(N))*ones(signal_length,1);
+for i = 2 : N
+    dictionary(:, i) = sqrt(2/N)*cos((pi/N)*((0:(signal_length-1))' + (1/2))*(i-1));
+end
+
+
 % matching pursuit
-[coe, a_atoms] = MP(cuspamax', dictionary, 32);
+L = 40;
+[coe, a_atoms] = MP(cuspamax', dictionary, L);
 
 %繪圖
 figure
@@ -25,6 +29,8 @@ hold on
 plot(a_atoms*coe','r--', 'linewidth', 1.5);
 
 legend('original signal', 'MP-by-DCT dictionary')
+title(['||a||_0 = ', num2str(L)]);
+xlim([1, signal_length]);
 end
 function [a, a_atoms] = MP(x, D, L)
 % Matching pursuit  (greed algorithm)   
@@ -49,11 +55,11 @@ a_atoms = [];
 R = x;
 
 for i = 1 : L
-    g = abs(D'*x);
+    g = abs(D'*R);
     [val, ind] = max(g); %找出內積值最大的分量
-    n_val = val / (x(:,ind)'*x(:,ind)); %計算投影值
+    n_val = (R'*D(:,ind)) / (D(:,ind)'*D(:,ind)); %計算投影值
     a = [a, n_val]; %存取投影值
-    a_atoms = [a_atoms, x(:,ind)];%存取投影值對應的　atom
-    R = R - n_val*x(:,ind);
+    a_atoms = [a_atoms, D(:,ind)];%存取投影值對應的　atom
+    R = R - n_val*D(:,ind);
 end
 end
