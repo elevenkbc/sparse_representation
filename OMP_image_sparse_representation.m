@@ -1,4 +1,4 @@
-function MP_image_sparse_representation
+function OMP_image_sparse_representation
 close all
 clear all
 clc
@@ -36,7 +36,7 @@ end
 A_col = double_A(:); %將影像排成行向量
 
 L = 50;
-[coe, a_atoms] = MP(A_col, DCT_Dictionary, L);
+[coe, a_atoms] = OMP(A_col, DCT_Dictionary, L);
 denoising_im_col = a_atoms*coe';
 denoising_im = reshape(denoising_im_col, M, N);
 
@@ -48,8 +48,8 @@ title('原始圖片')
 subplot(1,2,2)
 imshow(uint8(denoising_im));
 P1 = psnr(A, uint8(denoising_im));
-title(['MP by DCT with ||a||_0 = ', num2str(L)]);
-xlabel(['PSNR = ', num2str(P1)]);
+title(['OMP by DCT with ||a||_0 = ', num2str(L)]);
+xlabel(['PSNR = ', num2str(P1)])
 
 end
 
@@ -61,8 +61,8 @@ else
 end
 end
 
-function [a, a_atoms] = MP(x, D, L)
-% Matching pursuit  (greed algorithm)   
+function [a, a_atoms] = OMP(x, D, L)
+% Orthogonal matching pursuit  (greed algorithm)   
 %  
 %   min_{a}   || x - D a ||_2         subject to  ||a||_0  <= L
 % 
@@ -82,13 +82,19 @@ a_atoms = [];
 %initailize
 
 R = x;
+Phi = [];
 
+x_len = length(x);
 for i = 1 : L
     g = abs(D'*R);
     [val, ind] = max(g); %找出內積值最大的分量
     n_val = (R'*D(:,ind)) / (D(:,ind)'*D(:,ind)); %計算投影值
     a = [a, n_val]; %存取投影值
     a_atoms = [a_atoms, D(:,ind)];%存取投影值對應的　atom
-    R = R - n_val*D(:,ind);
+    Phi = [Phi, D(:,ind)]; %Phi 用來儲存，先前所選擇過的 atom
+
+    P = Phi*pinv(Phi); %P 為投影到 Phi 行空間的正交投影矩陣  P = Phi*inv(Phi'*Phi)*Phi'
+    
+    R = (eye(x_len) - P)*R;
 end
 end
