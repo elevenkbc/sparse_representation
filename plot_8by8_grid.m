@@ -30,17 +30,5 @@ end
 
 figure;
 imshow(uint8(im_a));
-% hold on
-% line_length_ver = size(im_a, 1) + 0.5;
-% line_length_hor = size(im_a, 2) + 0.5;
-% %畫直線
-% for i = 1 : block_ver_num-1
-%     plot([9*i, 9*i], [0.5, line_length_ver], 'r', 'linewidth', 2.5);
-% end
-% %畫橫線
-% for i = 1 : block_hor_num-1
-%     plot([0.5, line_length_hor], [9*i, 9*i], 'r', 'linewidth', 2.5);
-% end
-% hold off
 
 end
