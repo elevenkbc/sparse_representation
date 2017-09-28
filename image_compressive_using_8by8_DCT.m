@@ -49,12 +49,12 @@ for i = 1 : block_ver_num
         temp_dct = (mDCT8')*temp_block*mDCT8; %做 8by8 2D DCT
         DCT_coe((block_ind_start_i:block_ind_start_i+7),(block_ind_start_j:block_ind_start_j+7)) = temp_dct; %將係數塞回去
         % DCT 係數 threadhold
-        thrn = 7;
-        Thr_matrix = fliplr(toeplitz(zeros(1,8), [zeros(1, 8-thrn), ones(1,thrn)]));
+%         thrn = 7;
+%         Thr_matrix = fliplr(toeplitz(zeros(1,8), [zeros(1, 8-thrn), ones(1,thrn)]));
+%         
+%         temp_dct_thr = temp_dct.*Thr_matrix;
         
-        temp_dct_thr = temp_dct.*Thr_matrix;
-        
-        %temp_dct_thr = temp_dct.*(abs(temp_dct)>0.5);
+        temp_dct_thr = temp_dct.*(abs(temp_dct) > 2);
         %IDCT
         
         compressive_im((block_ind_start_i:block_ind_start_i+7),(block_ind_start_j:block_ind_start_j+7)) = mDCT8*temp_dct_thr*mDCT8';
