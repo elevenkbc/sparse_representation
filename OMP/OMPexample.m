@@ -1,4 +1,4 @@
-function OMPexample
+
 close all
 clear all
 clc
@@ -10,23 +10,36 @@ load cuspamax;
 N = 1500; %DCT dictionary atoms 的個數
 signal_length = length(cuspamax); %訊號長度
 dictionary = zeros(signal_length, N);
-dictionary(:, 1) = 1/(sqrt(N))*ones(signal_length,1);
-for i = 2 : N
-    dictionary(:, i) = sqrt(2/N)*cos((pi/N)*((0:(signal_length-1))' + (1/2))*(i-1));
+for k = 1 : N
+    if k == 1
+        dictionary(:, k) = (sqrt(1/signal_length))*cos((pi/N)*(k-1)*((0:(signal_length-1))' + (1/2)*ones(signal_length,1)));
+    else
+        Temp = cos((pi/N)*(k-1)*((0:(signal_length-1))' + (1/2)*ones(signal_length,1)));
+        Temp = Temp - mean(Temp);
+        dictionary(:, k) = Temp/norm(Temp);
+    end
 end
 
 
 % matching pursuit
 L = 40; %OMP 中 0norm 的最大可能值
-[coe, a_atoms] = OMP(cuspamax', dictionary, L, 1.0e-1);
+coe = OMP(dictionary, cuspamax',  L);
 
 %繪圖
 figure
 plot(cuspamax,'b', 'linewidth', 1.5);
 hold on
-plot(a_atoms*coe','r--', 'linewidth', 1.5);
+plot(dictionary*coe,'r--', 'linewidth', 1.5);
 
 legend('original signal', 'OMP-by-DCT dictionary')
-title(['||a||_0 = ', num2str(length(coe))]);
-xlim([1, signal_length]);
+
+%計算 coe 中的非零元數
+spark = 0;
+for i = 1 : N
+    if coe(i) ~= 0
+        spark = spark +1;
+    end
 end
+title(['||a||_0 = ', num2str(spark)]);
+xlim([1, signal_length]);
+
