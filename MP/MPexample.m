@@ -1,4 +1,4 @@
-function MPexample
+
 
 close all
 clear all
@@ -31,4 +31,4 @@ plot(a_atoms*coe','r--', 'linewidth', 1.5);
 legend('original signal', 'MP-by-DCT dictionary')
 title(['||a||_0 = ', num2str(L)]);
 xlim([1, signal_length]);
-end
+
