@@ -48,11 +48,11 @@ Block_im_n_mean0 = Block_im_n - kron(Block_im_n_mean, ones(64,1));
 
 
 %% Denoising 程序開始!!
-%階段1  用overcomplete DCT 求出每個分塊影像的 sparse表示係數
+%階段1  (式10) 用overcomplete DCT 求出每個分塊影像的 sparse表示係數 
 Block_sparse_coe = OMPdenoise(DCT_2D_frame, Block_im_n_mean0, Sigma); %這部要跑很久
  
-%階段2  在已知每個含雜訊的分塊矩陣的表示係數的情況下，用close-form 求出denoise 影像 hat_A
-%直接套用 close-form 公式
+%階段2  (式11) 在已知每個含雜訊的分塊矩陣的表示係數的情況下，用close-form 求出denoise 影像 hat_A
+%直接套用 close-form 公式 (式12)
 % close-form 看起來很複雜，事實上它只是把所有有重疊的block附近依照
 lam = 0.1; %參數
 
