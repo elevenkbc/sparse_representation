@@ -27,15 +27,15 @@ for i = 1 : p
     Phi = [];
     atom_ind = [];
     for j = 1 : L
-        g = abs(D'*R);
+        g = abs(norm_D'*R);
         [val, ind] = max(g); %找出內積絕對值最大的分量
         atom_ind = [atom_ind, ind];% atom_ind 表示在第i次疊代以前，所有已經用過的 atom index。
-        Phi = [Phi, D(:,ind)]; %Phi 用來儲存，先前所選擇過的 atom
+        Phi = [Phi, norm_D(:,ind)]; %Phi 用來儲存，先前所選擇過的 atom
         
         %%% 將 X(:, j) 分解成與 R(Phi) 空間 與 垂直 R(Phi)的空間 的直和(direct sum)。(Phi 矩陣的Range space 記做 R(Phi))
-
-        temp_coe = pinv(Phi)*X(:,i); %計算將 X(:,j) 投影到 R(Phi) 空間使得|| X(:,i) - Phi*(temp_coe)|| 最小的係數
-        P = Phi*pinv(Phi); %P 為投影到 R(Phi) 空間的正交投影矩陣  P = Phi*inv(Phi'*Phi)*Phi'
+        PinvPhi = pinv(Phi);
+        temp_coe = PinvPhi*X(:,i); %計算將 X(:,j) 投影到 R(Phi) 空間使得|| X(:,i) - Phi*(temp_coe)|| 最小的係數
+        P = Phi*PinvPhi; %P 為投影到 R(Phi) 空間的正交投影矩陣  P = Phi*inv(Phi'*Phi)*Phi'
         R = X(:,i) - P*X(:,i); %R 為剩下的殘差向量，R需滿足與 已經用過的 atom 均互相垂直
         
         if R < 1.0e-6 %如果剩下的殘差量太小，就跳出迴圈
