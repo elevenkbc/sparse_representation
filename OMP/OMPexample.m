@@ -1,5 +1,4 @@
 
-close all
 clear all
 clc
 
@@ -22,7 +21,7 @@ end
 
 
 % matching pursuit
-L = 40; %OMP 中 0norm 的最大可能值
+L = 10; %OMP 中 0norm 的最大可能值
 coe = OMP(dictionary, cuspamax',  L);
 
 %繪圖
@@ -31,7 +30,7 @@ plot(cuspamax,'b', 'linewidth', 1.5);
 hold on
 plot(dictionary*coe,'r--', 'linewidth', 1.5);
 
-legend('original signal', 'OMP-by-DCT dictionary')
+legend('original signal', 'Recovered signal from OMP')
 
 %計算 coe 中的非零元數
 spark = 0;
@@ -41,5 +40,6 @@ for i = 1 : N
     end
 end
 title(['||a||_0 = ', num2str(spark)]);
+xlabel(['MSE = ', num2str(sum((cuspamax'-dictionary*coe).^2)/length(cuspamax))]);
 xlim([1, signal_length]);
 

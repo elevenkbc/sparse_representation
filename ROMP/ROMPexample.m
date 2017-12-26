@@ -23,7 +23,7 @@ end
 
 
 % Regularized orthogonal matching pursuit
-L = 7; %對於訊號 sparsity 的估計值，注意不可以太大，因為在Regularized index 的過程中，會搜尋所有power set
+L = 6; %對於訊號 sparsity 的估計值，注意不可以太大，因為在Regularized index 的過程中，會搜尋所有power set
 coe = ROMP(dictionary, cuspamax',  L);
 
 %繪圖
@@ -32,7 +32,7 @@ plot(cuspamax,'b', 'linewidth', 1.5);
 hold on
 plot(dictionary*coe,'r--', 'linewidth', 1.5);
 
-legend('original signal', 'ROMP-by-DCT dictionary', 'location', 'Best')
+legend('Original signal', 'Recovered signal from ROMP', 'location', 'Best')
 %計算 coe 中的非零元數
 spark = 0;
 for i = 1 : N
@@ -41,6 +41,7 @@ for i = 1 : N
     end
 end
 title(['||a||_0 = ', num2str(spark)]);
+xlabel(['MSE = ', num2str(sum((cuspamax'-dictionary*coe).^2)/length(cuspamax))]);
 xlim([1, signal_length]);
 
 

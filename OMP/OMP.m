@@ -6,7 +6,7 @@ function [A] = OMP(D, X, L)
 %
 % input :
 % X 原始訊號當作column排成的訊號矩陣 X = [x_1, x_2, x_3, ..., x_p];
-% D 訊號字典 (DCT, harr wavelet 等等)
+% D 訊號字典 (DCT, harr wavelet 等等)，字典的每一個column的norm必須是1。
 % L a的非零元個數
 % output :
 % a 表示係數
@@ -15,11 +15,6 @@ function [A] = OMP(D, X, L)
 k = size(D, 2);
 A = zeros(k, p);
 
-%先將D 中每一個atom單位化
-norm_D = zeros(size(D));
-for i = 1 : k
-    norm_D(:,i) = D(:,i)/norm(D(:,i));
-end
 
 for i = 1 : p
     %initailize
@@ -27,10 +22,10 @@ for i = 1 : p
     Phi = [];
     atom_ind = [];
     for j = 1 : L
-        g = abs(norm_D'*R);
+        g = abs(D'*R);
         [val, ind] = max(g); %找出內積絕對值最大的分量
         atom_ind = [atom_ind, ind];% atom_ind 表示在第i次疊代以前，所有已經用過的 atom index。
-        Phi = [Phi, norm_D(:,ind)]; %Phi 用來儲存，先前所選擇過的 atom
+        Phi = [Phi, D(:,ind)]; %Phi 用來儲存，先前所選擇過的 atom
         
         %%% 將 X(:, j) 分解成與 R(Phi) 空間 與 垂直 R(Phi)的空間 的直和(direct sum)。(Phi 矩陣的Range space 記做 R(Phi))
         PinvPhi = pinv(Phi);

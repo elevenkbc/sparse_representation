@@ -1,6 +1,4 @@
 
-
-close all
 clear all
 clc
 
@@ -17,18 +15,21 @@ for i = 2 : N
     dictionary(:, i) = sqrt(2/N)*cos((pi/N)*((0:(signal_length-1))' + (1/2))*(i-1));
 end
 
+dictionary = dictionary*diag(1./sqrt(sum(dictionary.*dictionary))); %將dictionary 的每一個column 單位化
+
 
 % matching pursuit
-L = 40;
-[coe, a_atoms] = MP(cuspamax', dictionary, L);
+L = 10;
+[coe] = MP(dictionary, cuspamax', L);
 
 %繪圖
 figure
 plot(cuspamax,'b', 'linewidth', 1.5);
 hold on
-plot(a_atoms*coe','r--', 'linewidth', 1.5);
+plot(dictionary*coe,'r--', 'linewidth', 1.5);
 
 legend('original signal', 'MP-by-DCT dictionary')
 title(['||a||_0 = ', num2str(L)]);
+xlabel(['MSE = ', num2str(sum((cuspamax'-dictionary*coe).^2)/length(cuspamax))]);
 xlim([1, signal_length]);
 
